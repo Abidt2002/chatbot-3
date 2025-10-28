@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const chatBox = document.getElementById("chat-box");
   const userInput = document.getElementById("user-input");
   const sendBtn = document.getElementById("send-btn");
+  const stopBtn = document.getElementById("stop-btn"); // ✅ NEW: Stop button reference
 
   const normalize = s => (s || "").toLowerCase().trim();
 
@@ -132,16 +133,26 @@ document.addEventListener("DOMContentLoaded", () => {
     if (t) t.remove();
   }
 
+  // ✅ NEW: Stop typing flag
+  let stopTyping = false;
+
   // Character-by-character typing
   async function typeBotCharByChar(text) {
     const msg = document.createElement("div");
     msg.className = "message bot";
     chatBox.appendChild(msg);
+
+    stopTyping = false;
+    stopBtn.style.display = "inline-block"; // show Stop button
+
     for (let char of text) {
+      if (stopTyping) break; // stop typing instantly
       msg.innerHTML += char;
       chatBox.scrollTop = chatBox.scrollHeight;
       await new Promise(r => setTimeout(r, 30)); // typing speed
     }
+
+    stopBtn.style.display = "none"; // hide when done
   }
 
   async function showBotMessage(text) {
@@ -202,6 +213,13 @@ document.addEventListener("DOMContentLoaded", () => {
   sendBtn.addEventListener("click", handleSend);
   userInput.addEventListener("keydown", e => { if (e.key === "Enter") handleSend(); });
 
+  // ✅ NEW: Stop Button logic
+  if (stopBtn) {
+    stopBtn.addEventListener("click", () => {
+      stopTyping = true;
+      stopBtn.style.display = "none";
+    });
+  }
+
   loadCsv();
 });
-
