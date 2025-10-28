@@ -223,3 +223,46 @@ document.addEventListener("DOMContentLoaded", () => {
 
   loadCsv();
 });
+// ===== Stop Button Functionality =====
+let isGenerating = false;
+let currentTypingTimeouts = [];
+
+function startTypingEffect(element, text, speed = 30) {
+  isGenerating = true;
+  document.getElementById("stop-btn").style.display = "flex";
+  document.getElementById("send-btn").style.display = "none";
+
+  element.textContent = "";
+  let i = 0;
+
+  function typeNextChar() {
+    if (!isGenerating) return; // stop immediately if user pressed stop
+
+    if (i < text.length) {
+      element.textContent += text.charAt(i);
+      i++;
+      const timeout = setTimeout(typeNextChar, speed);
+      currentTypingTimeouts.push(timeout);
+    } else {
+      stopTypingEffect();
+    }
+  }
+
+  typeNextChar();
+}
+
+function stopTypingEffect() {
+  isGenerating = false;
+  currentTypingTimeouts.forEach(clearTimeout);
+  currentTypingTimeouts = [];
+
+  // Toggle button visibility
+  document.getElementById("stop-btn").style.display = "none";
+  document.getElementById("send-btn").style.display = "flex";
+}
+
+// Handle Stop Button Click
+document.getElementById("stop-btn").addEventListener("click", () => {
+  stopTypingEffect();
+});
+
