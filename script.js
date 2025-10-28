@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const CSV_FILENAME = "Devay Chatbot 1 QA.csv"; // place in same folder
+  const CSV_FILENAME = "Devay Chatbot 1 QA.csv"; // CSV file in same folder
   let qaData = [];
 
   const chatIcon = document.getElementById("chat-icon");
@@ -8,11 +8,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const chatBox = document.getElementById("chat-box");
   const userInput = document.getElementById("user-input");
   const sendBtn = document.getElementById("send-btn");
-  const stopBtn = document.getElementById("stop-btn"); // ✅ Blue stop button reference
+  const stopBtn = document.getElementById("stop-btn"); // ✅ Blue stop button
 
   const normalize = s => (s || "").toLowerCase().trim();
 
-  // OPEN / CLOSE CHAT with animation
+  // OPEN / CLOSE CHAT
   const openChat = () => {
     chatContainer.classList.add("chat-visible");
     chatContainer.style.transform = "translateY(20px) scale(1.05)";
@@ -23,7 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
       showWelcomeSuggestions();
     }
   };
-
   const closeChat = () => chatContainer.classList.remove("chat-visible");
   chatIcon.addEventListener("click", openChat);
   closeBtn.addEventListener("click", closeChat);
@@ -41,7 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Robust CSV parser
   function parseCSV(text) {
     const rows = [];
     let cur = "", col = [], inQuotes = false;
@@ -68,20 +66,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ---------- 🔍 Fuzzy Matching Logic ----------
+  // ---------- 🔍 Fuzzy Matching ----------
   function levenshtein(a, b) {
     const dp = Array(a.length + 1).fill(null).map(() => Array(b.length + 1).fill(0));
     for (let i = 0; i <= a.length; i++) dp[i][0] = i;
     for (let j = 0; j <= b.length; j++) dp[0][j] = j;
-
     for (let i = 1; i <= a.length; i++) {
       for (let j = 1; j <= b.length; j++) {
         const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-        dp[i][j] = Math.min(
-          dp[i - 1][j] + 1,
-          dp[i][j - 1] + 1,
-          dp[i - 1][j - 1] + cost
-        );
+        dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
       }
     }
     return dp[a.length][b.length];
@@ -115,7 +108,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const suggestions = top.filter(x => x.score > 0.35 && x !== best).map(x => x.question);
     return { answer: best.answer, suggestions };
   }
-  // ---------------------------------------------
 
   // Typing indicator
   function showTyping() {
@@ -133,26 +125,25 @@ document.addEventListener("DOMContentLoaded", () => {
     if (t) t.remove();
   }
 
-  // ✅ Stop typing flag
+  // ✅ Blue stop button typing logic
   let stopTyping = false;
 
-  // Character-by-character typing
   async function typeBotCharByChar(text) {
     const msg = document.createElement("div");
     msg.className = "message bot";
     chatBox.appendChild(msg);
 
     stopTyping = false;
-    stopBtn.style.display = "inline-block"; // show blue Stop button
+    stopBtn.style.display = "flex"; // show blue stop button
 
     for (let char of text) {
-      if (stopTyping) break; // stop typing instantly
+      if (stopTyping) break;
       msg.innerHTML += char;
       chatBox.scrollTop = chatBox.scrollHeight;
       await new Promise(r => setTimeout(r, 30)); // typing speed
     }
 
-    stopBtn.style.display = "none"; // hide when done
+    stopBtn.style.display = "none"; // hide stop button
   }
 
   async function showBotMessage(text) {
@@ -162,7 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
     await typeBotCharByChar(text);
   }
 
-  // 💡 Show suggestion buttons
+  // 💡 Suggestion buttons
   function showSuggestions(suggestions) {
     if (!suggestions || suggestions.length === 0) return;
     const wrap = document.createElement("div");
@@ -183,7 +174,6 @@ document.addEventListener("DOMContentLoaded", () => {
     chatBox.scrollTop = chatBox.scrollHeight;
   }
 
-  // 🌟 Welcome suggestions under greeting
   function showWelcomeSuggestions() {
     const welcomeQs = [
       "What is DevBay?",
@@ -213,12 +203,10 @@ document.addEventListener("DOMContentLoaded", () => {
   sendBtn.addEventListener("click", handleSend);
   userInput.addEventListener("keydown", e => { if (e.key === "Enter") handleSend(); });
 
-  // ✅ Blue Stop Button logic only
-  stopBtn.addEventListener("click", () => {
-    stopTyping = true;
-    stopBtn.style.display = "none";
-  });
+  // Blue stop button click
+  stopBtn.addEventListener("click", () => { stopTyping = true; });
 
   loadCsv();
 });
+
 
