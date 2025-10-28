@@ -176,9 +176,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function showWelcomeSuggestions() {
     const welcomeQs = [
-      "What is DevBay?",
-      "Where is DevBay located?",
-      "What services do you offer?"
+      "What is Devbay?",
+      "Where is Devbay located?",
+      "What services Devbay provide?"
     ];
     showSuggestions(welcomeQs);
   }
