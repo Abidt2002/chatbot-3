@@ -8,7 +8,7 @@
   padding: 8px 14px;
   border: none;
   cursor: pointer;
-  display: none;
+  display: none; /* hidden by default */
   box-shadow: 0 2px 8px rgba(11, 116, 255, 0.25);
   transition: background 0.2s ease, transform 0.1s ease;
 }
@@ -150,7 +150,7 @@ body {
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.1s;
+  transition: background 0.2s ease, transform 0.1s ease;
   width: 42px;
   height: 40px;
   box-shadow: 0 2px 8px rgba(11, 116, 255, 0.25);
@@ -160,26 +160,14 @@ body {
   pointer-events: none;
 }
 
-#send-btn:hover {
+#send-btn:hover,
+#stop-btn:hover {
   background: linear-gradient(180deg, #0c6efc, #004fca);
   transform: scale(1.05);
 }
 
-#stop-btn {
-  background: #ff4d4d;
-  color: #fff;
-  font-weight: bold;
-  font-size: 16px;
-  display: none;
-}
-
-#stop-btn:hover {
-  background: #e03a3a;
-  transform: scale(1.05);
-}
-
-#stop-btn:active,
-#send-btn:active {
+#send-btn:active,
+#stop-btn:active {
   transform: scale(0.95);
 }
 
@@ -237,7 +225,7 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ====== Suggestion Buttons (Optional) ====== */
+/* ====== Suggestion Buttons ====== */
 .suggestion-box {
   display: flex;
   flex-wrap: wrap;
@@ -261,14 +249,11 @@ body {
   transform: scale(1.05);
 }
 
-/* ====== Extra Polishing for DevBay Assistant ====== */
-
-/* Soft glowing border for active chat window */
+/* ====== Extra Polishing ====== */
 #devbay-chat.chat-visible {
   box-shadow: 0 10px 35px rgba(11, 116, 255, 0.18), 0 0 10px rgba(11, 116, 255, 0.1);
 }
 
-/* Smooth scrollbar for chat area */
 #chat-box::-webkit-scrollbar {
   width: 6px;
 }
@@ -280,7 +265,6 @@ body {
   background-color: rgba(11, 116, 255, 0.6);
 }
 
-/* Message fade glow */
 .message.bot {
   position: relative;
   overflow: hidden;
@@ -302,7 +286,6 @@ body {
   100% { left: 100%; }
 }
 
-/* Chat icon pulse */
 #chat-icon {
   animation: pulse 2.8s infinite ease-in-out;
 }
@@ -312,7 +295,6 @@ body {
   50% { box-shadow: 0 0 0 10px rgba(11, 116, 255, 0); }
 }
 
-/* Suggestion buttons polish */
 .suggestion {
   font-weight: 500;
   background: linear-gradient(90deg, #e7ecff, #edf2ff);
@@ -322,7 +304,6 @@ body {
   transform: scale(1.05);
 }
 
-/* Input area glow when focused */
 #user-input:focus {
   border-color: #0b74ff;
   box-shadow: 0 0 0 3px rgba(11, 116, 255, 0.15);
