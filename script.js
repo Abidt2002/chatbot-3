@@ -11,14 +11,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const normalize = s => (s || "").toLowerCase().trim();
 
-  // OPEN / CLOSE CHAT with slide + pop animation
+  // OPEN / CLOSE CHAT with animation
   const openChat = () => {
     chatContainer.classList.add("chat-visible");
     chatContainer.style.transform = "translateY(20px) scale(1.05)";
     setTimeout(() => { chatContainer.style.transform = "translateY(0) scale(1)"; }, 50);
     userInput.focus();
-    if (chatBox.children.length === 0)
-      showBotMessage("👋 Hi — I'm the Devbay Assistant. Ask me anything about Devbay!");
+    if (chatBox.children.length === 0) {
+      showBotMessage("👋 Hi — I'm the DevBay Assistant. Ask me anything about DevBay!");
+      showWelcomeSuggestions();
+    }
   };
 
   const closeChat = () => chatContainer.classList.remove("chat-visible");
@@ -65,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ---------- 🔍 Fuzzy Matching Logic (Hybrid + Suggestions) ----------
+  // ---------- 🔍 Fuzzy Matching Logic ----------
   function levenshtein(a, b) {
     const dp = Array(a.length + 1).fill(null).map(() => Array(b.length + 1).fill(0));
     for (let i = 0; i <= a.length; i++) dp[i][0] = i;
@@ -75,9 +77,9 @@ document.addEventListener("DOMContentLoaded", () => {
       for (let j = 1; j <= b.length; j++) {
         const cost = a[i - 1] === b[j - 1] ? 0 : 1;
         dp[i][j] = Math.min(
-          dp[i - 1][j] + 1,     // deletion
-          dp[i][j - 1] + 1,     // insertion
-          dp[i - 1][j - 1] + cost  // substitution
+          dp[i - 1][j] + 1,
+          dp[i][j - 1] + 1,
+          dp[i - 1][j - 1] + cost
         );
       }
     }
@@ -104,19 +106,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }));
 
     scored.sort((a, b) => b.score - a.score);
-    const top = scored.slice(0, 3); // top 3 matches
-
+    const top = scored.slice(0, 3);
     const best = top[0];
     if (!best || best.score < 0.45)
-      return { answer: "🤖 Sorry, I couldn't find a matching answer.", suggestions: [] };
+      return { answer: "🤖 Sorry, I couldn’t find a matching answer.", suggestions: [] };
 
-    const suggestions = top
-      .filter(x => x.score > 0.35 && x !== best)
-      .map(x => x.question);
-
+    const suggestions = top.filter(x => x.score > 0.35 && x !== best).map(x => x.question);
     return { answer: best.answer, suggestions };
   }
-  // -------------------------------------------------------------------
+  // ---------------------------------------------
 
   // Typing indicator
   function showTyping() {
@@ -139,18 +137,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const msg = document.createElement("div");
     msg.className = "message bot";
     chatBox.appendChild(msg);
-
     for (let char of text) {
       msg.innerHTML += char;
       chatBox.scrollTop = chatBox.scrollHeight;
-      await new Promise(r => setTimeout(r, 30)); // 30ms per character
+      await new Promise(r => setTimeout(r, 30)); // typing speed
     }
   }
 
-  // Show bot message with typing indicator
   async function showBotMessage(text) {
     const typingEl = showTyping();
-    await new Promise(r => setTimeout(r, 500)); // thinking delay
+    await new Promise(r => setTimeout(r, 500)); // small delay
     hideTyping();
     await typeBotCharByChar(text);
   }
@@ -159,27 +155,31 @@ document.addEventListener("DOMContentLoaded", () => {
   function showSuggestions(suggestions) {
     if (!suggestions || suggestions.length === 0) return;
     const wrap = document.createElement("div");
-    wrap.className = "message bot";
-    wrap.innerHTML = "<b>💡 Did you mean:</b><br>";
+    wrap.className = "suggestions";
 
     suggestions.forEach(s => {
       const btn = document.createElement("button");
+      btn.className = "suggestion-btn";
       btn.textContent = s;
-      btn.style.margin = "4px 4px 0 0";
-      btn.style.padding = "6px 10px";
-      btn.style.border = "1px solid #0b74ff";
-      btn.style.borderRadius = "8px";
-      btn.style.background = "#eef2ff";
-      btn.style.cursor = "pointer";
-      btn.style.color = "#0b74ff";
-      btn.onclick = () => {
+      btn.addEventListener("click", () => {
         userInput.value = s;
         handleSend();
-      };
+      });
       wrap.appendChild(btn);
     });
+
     chatBox.appendChild(wrap);
     chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  // 🌟 Welcome suggestions under greeting
+  function showWelcomeSuggestions() {
+    const welcomeQs = [
+      "What is DevBay?",
+      "Where is DevBay located?",
+      "What services do you offer?"
+    ];
+    showSuggestions(welcomeQs);
   }
 
   // Handle user input
@@ -204,3 +204,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   loadCsv();
 });
+
