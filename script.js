@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const chatBox = document.getElementById("chat-box");
   const userInput = document.getElementById("user-input");
   const sendBtn = document.getElementById("send-btn");
-  const stopBtn = document.getElementById("stop-btn"); // ✅ NEW: Stop button reference
+  const stopBtn = document.getElementById("stop-btn"); // ✅ Blue stop button reference
 
   const normalize = s => (s || "").toLowerCase().trim();
 
@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (t) t.remove();
   }
 
-  // ✅ NEW: Stop typing flag
+  // ✅ Stop typing flag
   let stopTyping = false;
 
   // Character-by-character typing
@@ -143,7 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
     chatBox.appendChild(msg);
 
     stopTyping = false;
-    stopBtn.style.display = "inline-block"; // show Stop button
+    stopBtn.style.display = "inline-block"; // show blue Stop button
 
     for (let char of text) {
       if (stopTyping) break; // stop typing instantly
@@ -213,56 +213,12 @@ document.addEventListener("DOMContentLoaded", () => {
   sendBtn.addEventListener("click", handleSend);
   userInput.addEventListener("keydown", e => { if (e.key === "Enter") handleSend(); });
 
-  // ✅ NEW: Stop Button logic
-  if (stopBtn) {
-    stopBtn.addEventListener("click", () => {
-      stopTyping = true;
-      stopBtn.style.display = "none";
-    });
-  }
+  // ✅ Blue Stop Button logic only
+  stopBtn.addEventListener("click", () => {
+    stopTyping = true;
+    stopBtn.style.display = "none";
+  });
 
   loadCsv();
-});
-// ===== Stop Button Functionality =====
-let isGenerating = false;
-let currentTypingTimeouts = [];
-
-function startTypingEffect(element, text, speed = 30) {
-  isGenerating = true;
-  document.getElementById("stop-btn").style.display = "flex";
-  document.getElementById("send-btn").style.display = "none";
-
-  element.textContent = "";
-  let i = 0;
-
-  function typeNextChar() {
-    if (!isGenerating) return; // stop immediately if user pressed stop
-
-    if (i < text.length) {
-      element.textContent += text.charAt(i);
-      i++;
-      const timeout = setTimeout(typeNextChar, speed);
-      currentTypingTimeouts.push(timeout);
-    } else {
-      stopTypingEffect();
-    }
-  }
-
-  typeNextChar();
-}
-
-function stopTypingEffect() {
-  isGenerating = false;
-  currentTypingTimeouts.forEach(clearTimeout);
-  currentTypingTimeouts = [];
-
-  // Toggle button visibility
-  document.getElementById("stop-btn").style.display = "none";
-  document.getElementById("send-btn").style.display = "flex";
-}
-
-// Handle Stop Button Click
-document.getElementById("stop-btn").addEventListener("click", () => {
-  stopTypingEffect();
 });
 
