@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const top = scored.slice(0, 3);
     const best = top[0];
     if (!best || best.score < 0.45)
-      return { answer: "🤖 Sorry, I couldn’t find a matching answer.", suggestions: [] };
+      return { answer: "Hmm, I’m not sure I understood that. Could you please rephrase your question about Devbay.", suggestions: [] };
 
     const suggestions = top.filter(x => x.score > 0.35 && x !== best).map(x => x.question);
     return { answer: best.answer, suggestions };
